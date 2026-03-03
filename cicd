@@ -1,21 +1,10 @@
 pipeline {
     agent any
 
-    tools {
-        jdk 'jdk17'
-        maven 'maven3'
-    }
-
-    triggers {
-        pollSCM('H/2 * * * *')   // optional - checks git every 2 minutes
-    }
-
     stages {
-
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/renupoc/sample-jenkins-project.git'
+                git 'https://github.com/renupoc/sample-jenkins-project.git'
             }
         }
 
@@ -27,12 +16,6 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'Build Successful ✅'
-        }
-        failure {
-            echo 'Build Failed ❌'
-        }
         always {
             junit '**/target/surefire-reports/*.xml'
         }
