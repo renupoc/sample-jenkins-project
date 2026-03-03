@@ -5,6 +5,6 @@ public class SampleTest {
 
     @Test
     void testAddition() {
-        assertEquals(6, 4 + 2);
+        assertEquals(6, 3 + 3);
     }
 }
