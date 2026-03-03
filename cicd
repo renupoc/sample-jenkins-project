@@ -1,24 +1,40 @@
-name: Java CI with Maven
+pipeline {
+    agent any
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    tools {
+        jdk 'jdk17'
+        maven 'maven3'
+    }
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+    triggers {
+        pollSCM('H/2 * * * *')   // optional - checks git every 2 minutes
+    }
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    stages {
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/renupoc/sample-jenkins-project.git'
+            }
+        }
 
-      - name: Build with Maven
-        run: mvn clean test
+        stage('Build & Test') {
+            steps {
+                sh 'mvn clean test'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build Successful ✅'
+        }
+        failure {
+            echo 'Build Failed ❌'
+        }
+        always {
+            junit '**/target/surefire-reports/*.xml'
+        }
+    }
+}
